@@ -1,0 +1,231 @@
+{
+	"info": {
+		"_postman_id": "f89f1b92-940f-4118-b38d-3d9fd2c24f06",
+		"name": "Restful Booker",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20842590",
+		"_collection_link": "https://www.postman.com/red-eclipse-983471/workspace/onafriq/collection/20842590-f89f1b92-940f-4118-b38d-3d9fd2c24f06?action=share&source=collection_link&creator=20842590"
+	},
+	"item": [
+		{
+			"name": "Create a Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has bookingid\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.have.property('bookingid');\r",
+							"    // Save the bookingid to the environment variable to parse in for subsequent use\r",
+							"    pm.environment.set(\"bookingId\", jsonData.bookingid);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has firstname\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.booking).to.have.property('firstname');\r",
+							"    // Save the firstname to the environment variable\r",
+							"    pm.environment.set(\"firstName\", jsonData.booking.firstname);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has lastname\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.booking).to.have.property('lastname');\r",
+							"    // Save the lastname to the environment variable\r",
+							"    pm.environment.set(\"lastName\", jsonData.booking.lastname);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response has totalprice\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.booking).to.have.property('totalprice');\r",
+							"    // Save the totalprice to the environment variable\r",
+							"    pm.environment.set(\"totalPrice\", jsonData.booking.totalprice);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify other details\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.booking.totalprice).to.be.a('number');\r",
+							"    pm.expect(jsonData.booking.depositpaid).to.eql(true);\r",
+							"\t\tpm.expect(jsonData.booking.bookingdates).to.have.property('checkin' && 'checkout')\r",
+							"\t\t// pm.expect(jsonData.booking.bookingdates).to.have.property('checkin')\r",
+							"    pm.expect(jsonData.booking.additionalneeds).to.eql(\"Breakfast\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}}\",\r\n    \"lastname\": \"{{$randomLastName}}\",\r\n    \"totalprice\": {{$randomPrice}},\r\n    \"depositpaid\": true,\r\n    \"bookingdates\": {\r\n        \"checkin\": \"{{checkin}}\",\r\n        \"checkout\": \"{{checkout}}\"\r\n    },\r\n    \"additionalneeds\": \"Breakfast\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get the Booking Created",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Verify booking details\", function () {\r",
+							"    var booking = pm.response.json();\r",
+							"    pm.expect(booking.firstname).to.be.a('string');\r",
+							"    pm.expect(booking.lastname).to.be.a('string');\r",
+							"    pm.expect(booking.totalprice).to.be.a('number');\r",
+							"    pm.expect(booking.depositpaid).to.be.a('boolean');\r",
+							"    pm.expect(booking.bookingdates.checkin).to.exist;\r",
+							"    pm.expect(booking.bookingdates.checkout).to.exist;\r",
+							"    pm.expect(booking.additionalneeds).to.be.a('string');\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/:id",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{bookingId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"\tpm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Verify the changes to the checkout and additionalneeds \", function () {\r",
+							"\tvar jsonData = pm.response.json();\r",
+							"\tpm.expect(jsonData).to.have.property('bookingdates');\r",
+							"\tpm.expect(jsonData.bookingdates).to.have.property('checkout');\r",
+							"\tpm.expect(jsonData).to.not.have.property(\"{{checkout}}\");\r",
+							"\tpm.expect(jsonData).to.not.have.property(\"{{random}}\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"content-type": true
+				}
+			},
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"value": "application/x-www-form-urlencoded",
+						"disabled": true
+					},
+					{
+						"key": "Authorization",
+						"value": "{{accessToken}}"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"firstname\" : \"{{firstName}}\",\n    \"lastname\" : \"{{lastName}}\",\n    \"totalprice\" : {{totalPrice}},\n    \"depositpaid\" : true,\n    \"bookingdates\" : {\n        \"checkin\" : \"{{checkin}}\",\n        \"checkout\" : \"{{$randomDateFuture}}\"\n    },\n    \"additionalneeds\" : \"{{$randomProduct}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://restful-booker.herokuapp.com/booking/:id",
+					"protocol": "https",
+					"host": [
+						"restful-booker",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"booking",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "{{bookingId}}"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
